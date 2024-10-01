@@ -1,11 +1,11 @@
 version: '3'
 services:
   bot:
-    build: ./bot
+    build: ./Bot
     container_name: discord_bot
     command: python bot.py
     volumes:
-      - ./bot:/app
+      - ./Bot:/app
     working_dir: /app
     environment:
       - PYTHONUNBUFFERED=1
@@ -14,13 +14,13 @@ services:
       - server
 
   server:
-    build: ./server
+    build: ./Server
     container_name: flask_server
     command: python server.py
     ports:
       - "5000:5000"
     volumes:
-      - ./server:/app
+      - ./Server:/app
     working_dir: /app
     environment:
       - PYTHONUNBUFFERED=1
