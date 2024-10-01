@@ -18,6 +18,27 @@ class Sync(commands.Cog):
         response.raise_for_status()
         return response.json()
     
+    def fetch_watched_roles(self):
+        #Belike [
+        # 	{
+        # 		"dc_rank_id": 1282038292946354226,
+        # 		"gmod_job": "stormen"
+        # 	},
+        # 	{
+        # 		"dc_rank_id": 1282038292946354226,
+        # 		"gmod_job": "stormrecruit"
+        # 	},
+        # 	{
+        # 		"dc_rank_id": 1282038215452131448,
+        # 		"gmod_job": "armyrecruit"
+        # 	}
+        # ]
+
+        url = "http://server:5000/dc/roles"
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+    
     async def add_user_rank(self, discord_id, rank_id):
         
         guild = self.bot.get_guild(1281606978329645057) # Replace with your guild ID
@@ -77,10 +98,12 @@ class Sync(commands.Cog):
             return True
     
     async def sync_user_ranks(self, data):
-        
-        print(log_service.log(log_service.LogLevel.INFO, "Syncing data2..."))
-        
-        ignore_roles = [1281607139869327462, 1281765283781935114, 1281765572408774696] # Replace with your role IDs
+
+        watched_roles = self.fetch_watched_roles()
+
+        watched_roles_array = []
+        for role in watched_roles:
+            watched_roles_array.append(role["dc_rank_id"])
 
         try:
             all_users = self.bot.get_guild(1281606978329645057).members
@@ -94,14 +117,14 @@ class Sync(commands.Cog):
                 user_data = data[str(user.id)]
                 for role in all_roles:
                     if role.id in user_data:
-                        if role.id not in ignore_roles:
+                        if role.id in watched_roles_array:
                             await self.add_user_rank(user.id, role.id)
                     else:
-                        if role.id not in ignore_roles:
+                        if role.id in watched_roles_array:
                             await self.remove_user_rank(user.id, role.id)
             else:
                 for role in all_roles:
-                    if role.id not in ignore_roles:
+                    if role.id in watched_roles_array:
                         await self.remove_user_rank(user.id, role.id)
 
 
