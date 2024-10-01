@@ -1,0 +1,52 @@
+version: '3'
+services:
+  bot:
+    build: ./bot
+    container_name: discord_bot
+    command: python bot.py
+    volumes:
+      - ./bot:/app
+    working_dir: /app
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - db
+
+  server:
+    build: ./server
+    container_name: flask_server
+    command: python server.py
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server:/app
+    working_dir: /app
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: registerdb
+      MYSQL_USER: bot
+      MYSQL_PASSWORD: bot
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
