@@ -301,8 +301,8 @@ def register(steam_id):
         register_steam_id(steam_id)
         return "Steam-ID erfolgreich registriert. Gib auf dem Discord den Befehl /link mit folgendem Registrierungsschlüssel ein: " + get_reg_key(steam_id), 201
         # return jsonify({"message": "Steam-ID erfolgreich registriert. Gib auf dem Discord den Befehl `/link " + get_reg_key(steam_id) + "` ein."}), 201
-    except:
-        return "Fehler beim Registrieren der Steam-ID.", 500
+    except Exception as e:
+        return "Fehler beim Registrieren der Steam-ID " + str(e), 500
         # return jsonify({"message": "Fehler beim Registrieren der Steam-ID."}), 500
     
 @app.route("/link", methods=['POST'])
