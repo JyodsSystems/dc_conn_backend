@@ -127,7 +127,7 @@ def check_steam_id(steam_id : int) -> bool:
     result = db.fetch_one(query, (steam_id,))
     return result is not None
 
-def check_discord_id(steam_id : int) -> bool:
+def check_discord_id_gmod(steam_id : int) -> bool:
     """
     Überprüft, ob eine Discord-ID bereits in der Datenbank existiert.
 
@@ -289,7 +289,7 @@ def hello_world():
 def register(steam_id):
 
     if check_steam_id(steam_id):
-        if check_discord_id(steam_id):
+        if check_discord_id_gmod(steam_id):
             return "Account bereits registriert und verknüpft.", 400
             # return jsonify({"message": "Account bereits registriert und verknüpft."}), 400
         else:
