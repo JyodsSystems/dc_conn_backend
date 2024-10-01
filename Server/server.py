@@ -258,27 +258,27 @@ def add_or_change_entry(id, sid, name, job, model, wallet, faction) -> None:
         db.execute_query(query, (id, sid, name, job, model, wallet, faction))    
 
 def get_discord_users_with_all_ranks():
-    # SQL-Abfrage mit COALESCE zur Handhabung von NULL-Werten
+    # Joine Players steam_id auf users steam_id und Players job auf mapping gmod_job und gibe die users discord_id mit allen mapping dc_rank_id zurück, group by discord_id
     query = """
         SELECT users.discord_id, COALESCE(mapping.dc_rank_id, 0) AS dc_rank_id
         FROM users
-        JOIN players ON users.steam_id = players.steam_id
-        JOIN mapping ON players.job = mapping.gmod_job;
+        LEFT JOIN players ON users.steam_id = players.steam_id
+        LEFT JOIN mapping ON players.job = mapping.gmod_job
+        GROUP BY users.discord_id, mapping.dc_rank_id;
     """
     result = db.fetch_all(query)
 
-    data = {}  # Hier werden die Daten gespeichert
+    data = {} # Hier sollen die Daten gespeichert werden
 
     for row in result:
-        discord_id = row.get("discord_id")
-        dc_rank_id = row.get("dc_rank_id")
+        discord_id = row["discord_id"]
+        dc_rank_id = row["dc_rank_id"]
 
-        # Sicherstellen, dass discord_id und dc_rank_id gültige Werte sind
-        if discord_id is not None and dc_rank_id is not None:
-            if discord_id in data:
-                data[discord_id].append(dc_rank_id)
-            else:
-                data[discord_id] = [dc_rank_id]
+        if discord_id in data:
+            data[discord_id].append(dc_rank_id)
+        else:
+            data[discord_id] = [dc_rank_id]
+
 
     return data
 
