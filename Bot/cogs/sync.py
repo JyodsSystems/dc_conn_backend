@@ -131,5 +131,8 @@ class Sync(commands.Cog):
     @tasks.loop(seconds=30)
     async def sync(self):
         print(log_service.log(log_service.LogLevel.INFO, "Syncing data..."))
-        data = self.fetch_user_ranks()
-        await self.sync_user_ranks(data)
+        try:
+            data = self.fetch_user_ranks()
+            await self.sync_user_ranks(data)
+        except Exception as e:
+            print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
