@@ -259,7 +259,12 @@ def add_or_change_entry(id, sid, name, job, model, wallet, faction) -> None:
 
 def get_discord_users_with_all_ranks():
     # Joine Players steam_id auf users steam_id und Players job auf mapping gmod_job und gibe die users discord_id mit allen mapping dc_rank_id zurück, group by discord_id
-    query = "SELECT users.discord_id, mapping.dc_rank_id FROM users JOIN players ON users.steam_id = players.steam_id JOIN mapping ON players.job = mapping.gmod_job;"
+    query = """
+        SELECT users.discord_id, COALESCE(mapping.dc_rank_id, 0) AS dc_rank_id
+        FROM users
+        JOIN players ON users.steam_id = players.steam_id
+        JOIN mapping ON players.job = mapping.gmod_job;
+    """
     result = db.fetch_all(query)
 
     data = {} # Hier sollen die Daten gespeichert werden
