@@ -262,8 +262,9 @@ def get_discord_users_with_all_ranks():
     query = """
         SELECT users.discord_id, COALESCE(mapping.dc_rank_id, 0) AS dc_rank_id
         FROM users
-        JOIN players ON users.steam_id = players.steam_id
-        JOIN mapping ON players.job = mapping.gmod_job;
+        LEFT JOIN players ON users.steam_id = players.steam_id
+        LEFT JOIN mapping ON players.job = mapping.gmod_job
+        GROUP BY users.discord_id, mapping.dc_rank_id;
     """
     result = db.fetch_all(query)
 
