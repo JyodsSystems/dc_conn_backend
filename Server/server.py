@@ -285,7 +285,7 @@ def delete_every_entry_except_ids(ids):
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/register/<str:steam_id>", methods=['POST'])
+@app.route("/register/<string:steam_id>", methods=['POST'])
 def register(steam_id):
 
     if check_steam_id(steam_id):
