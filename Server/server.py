@@ -384,12 +384,15 @@ def dc_sync():
     
 @app.route("/dc/roles", methods=['GET'])
 def dc_roles():
-    query = "SELECT * FROM mapping;"
+    # Get all Mappings but no double dc_rank_id entries
+
+    query = "SELECT DISTINCT dc_rank_id FROM mapping;"
     result = db.fetch_all(query)
 
     data = []
     for row in result:
-        data.append({"dc_rank_id": row["dc_rank_id"], "gmod_job": row["gmod_job"]})
+        # data.append({"dc_rank_id": row["dc_rank_id"], "gmod_job": row["gmod_job"]})
+        data.append({"dc_rank_id": row["dc_rank_id"]})
 
     return jsonify(data), 200
     
