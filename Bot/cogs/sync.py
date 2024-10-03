@@ -56,7 +56,7 @@ class Sync(commands.Cog):
     async def add_user_rank(self, discord_id, rank_id):
         try:
 
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.1)
 
             guild = self.bot.get_guild(1281606978329645057) # Replace with your guild ID
             
@@ -92,7 +92,7 @@ class Sync(commands.Cog):
     async def remove_user_rank(self, discord_id, rank_id):
             try: 
 
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(0.1)
             
                 guild = self.bot.get_guild(1281606978329645057)
 
@@ -148,16 +148,22 @@ class Sync(commands.Cog):
 
                 if str(user.id) in data:
                     user_data = data[str(user.id)]
+
+                    log_service.log(log_service.LogLevel.INFO, f"UserData: {user_data}")
+
                     for role in all_roles:
                         if role.id in user_data:
                             if role.id in watched_roles_array:
+                                log_service.log(log_service.LogLevel.INFO, f"Wanted to add role {role.id} to user {user.id}")
                                 await self.add_user_rank(user.id, role.id)
                         else:
                             if role.id in watched_roles_array:
+                                log_service.log(log_service.LogLevel.INFO, f"Wanted to remove role {role.id} from user {user.id}")
                                 await self.remove_user_rank(user.id, role.id)
                 else:
                     for role in all_roles:
                         if role.id in watched_roles_array:
+                            log_service.log(log_service.LogLevel.INFO, f"Wanted to remove role {role.id} from user {user.id}")
                             await self.remove_user_rank(user.id, role.id)
 
                 print(log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id} took {time.time() - curr_time} seconds."))
