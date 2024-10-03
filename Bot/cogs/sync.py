@@ -1,6 +1,7 @@
 import requests
 import discord
 import aiohttp
+import time
 from discord.ext import tasks, commands
 import services.log_service as log_service
 
@@ -147,6 +148,9 @@ class Sync(commands.Cog):
 
     @tasks.loop(minutes=5)
     async def sync(self):
+
+        curr_sys_time = time.time()
+
         print("Sync loop is running...")
         print(log_service.log(log_service.LogLevel.INFO, "Syncing data..."))
         try:
@@ -154,3 +158,5 @@ class Sync(commands.Cog):
             await self.sync_user_ranks(data)
         except Exception as e:
             print(log_service.log(log_service.LogLevel.ERROR, f"Error in sync loop: {e}"))
+        finally:
+            print(log_service.log(log_service.LogLevel.INFO, f"Syncing took {time.time() - curr_sys_time} seconds."))
