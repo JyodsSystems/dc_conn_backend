@@ -38,9 +38,10 @@ def log(level, message):
     #     'message': message
     # }, db.DBs.logs)
 
-    # requests.post(discord_webhook, json={
-    #     "content": f"[QuackBot] [{level.value['name']}] - {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')} - {message}"
-    # })
+    if level.value['level'] >= LogLevel.ERROR.value['level']:
+        requests.post(discord_webhook, json={
+            "content": f"[QuackBot] [{level.value['name']}] - {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')} - {message}"
+        })
 
     return
 
