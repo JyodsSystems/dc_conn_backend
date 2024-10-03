@@ -8,6 +8,7 @@ class Sync(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.sync_loop_started = False
+        self.timeout = aiohttp.ClientTimeout(total=10)
 
 
     def cog_unload(self):
@@ -18,7 +19,7 @@ class Sync(commands.Cog):
     async def fetch_user_ranks(self):
         try:
             url = "http://server:5000/dc/sync"
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 async with session.get(url) as response:
                     response.raise_for_status()
                     return await response.json()
@@ -29,7 +30,7 @@ class Sync(commands.Cog):
     async def fetch_watched_roles(self):
         try:
             url = "http://server:5000/dc/roles"
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 async with session.get(url) as response:
                     response.raise_for_status()
                     return await response.json()
@@ -144,7 +145,7 @@ class Sync(commands.Cog):
             self.sync.start()
             self.sync_loop_started = True
 
-    @tasks.loop(seconds=15)
+    @tasks.loop(seconds=30)
     async def sync(self):
         print("Sync loop is running...")
         print(log_service.log(log_service.LogLevel.INFO, "Syncing data..."))
