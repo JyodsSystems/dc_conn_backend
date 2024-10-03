@@ -4,14 +4,14 @@ import aiohttp
 from discord.ext import tasks, commands
 import services.log_service as log_service
 
-class sync(commands.Cog):
+class Sync(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.sync.start()
+        self.Sync.start()
 
     def cog_unload(self):
         print("Unloading sync cog...")
-        self.sync.cancel()
+        self.Sync.cancel()
 
 
 async def fetch_user_ranks(self):
