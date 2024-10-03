@@ -7,11 +7,12 @@ import services.log_service as log_service
 class Sync(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.Sync.start()
+        self.sync.start()
+
 
     def cog_unload(self):
         print("Unloading sync cog...")
-        self.Sync.cancel()
+        self.sync.cancel()
 
 
 async def fetch_user_ranks(self):
