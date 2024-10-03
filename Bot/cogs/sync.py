@@ -114,8 +114,8 @@ class Sync(commands.Cog):
                 watched_roles_array.append(role["dc_rank_id"])
 
             try:
-                all_users = self.bot.get_guild(1281606978329645057).members
-                all_roles = self.bot.get_guild(1281606978329645057).roles
+                all_users = await self.bot.get_guild(1281606978329645057).members
+                all_roles = await self.bot.get_guild(1281606978329645057).roles
             except Exception as e:
                 print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
                 return
