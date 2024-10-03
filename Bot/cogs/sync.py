@@ -4,7 +4,7 @@ import aiohttp
 from discord.ext import tasks, commands
 import services.log_service as log_service
 
-class Sync(commands.Cog):
+class sync(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.sync.start()
