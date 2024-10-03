@@ -7,7 +7,7 @@ import services.log_service as log_service
 class Sync(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.sync.start()
+        self.sync_loop_started = False
 
 
     def cog_unload(self):
@@ -137,12 +137,19 @@ class Sync(commands.Cog):
         except Exception as e:
             print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
 
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if not self.sync_loop_started:  # Verhindert, dass der Loop mehrmals gestartet wird
+            print("Bot is ready, starting sync loop...")
+            self.sync.start()
+            self.sync_loop_started = True
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=60)
     async def sync(self):
+        print("Sync loop is running...")
         print(log_service.log(log_service.LogLevel.INFO, "Syncing data..."))
         try:
             data = await self.fetch_user_ranks()
             await self.sync_user_ranks(data)
         except Exception as e:
-            print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
+            print(log_service.log(log_service.LogLevel.ERROR, f"Error in sync loop: {e}"))
