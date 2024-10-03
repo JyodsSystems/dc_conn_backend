@@ -142,6 +142,8 @@ class Sync(commands.Cog):
 
             for user in all_users:
 
+                curr_time = time.time()
+
                 log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id}...")
 
                 if str(user.id) in data:
@@ -157,6 +159,8 @@ class Sync(commands.Cog):
                     for role in all_roles:
                         if role.id in watched_roles_array:
                             await self.remove_user_rank(user.id, role.id)
+
+                print(log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id} took {time.time() - curr_time} seconds."))
 
             
             log_service.log(log_service.LogLevel.INFO, "Synced user ranks.")
