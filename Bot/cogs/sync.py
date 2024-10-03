@@ -19,10 +19,16 @@ class Sync(commands.Cog):
 
     async def fetch_user_ranks(self):
         try:
+
+            curr_time = time.time()
+
             url = "http://server:5000/dc/sync"
             async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 async with session.get(url) as response:
                     response.raise_for_status()
+
+                    log_service.log(log_service.LogLevel.INFO, f"Fetched user ranks in {time.time() - curr_time} seconds.")
+
                     return await response.json()
         except Exception as e:
             print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
@@ -30,10 +36,16 @@ class Sync(commands.Cog):
 
     async def fetch_watched_roles(self):
         try:
+
+            curr_time = time.time()
+
             url = "http://server:5000/dc/roles"
             async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 async with session.get(url) as response:
                     response.raise_for_status()
+
+                    log_service.log(log_service.LogLevel.INFO, f"Fetched watched roles in {time.time() - curr_time} seconds.")
+
                     return await response.json()
         except Exception as e:
             print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
@@ -136,6 +148,10 @@ class Sync(commands.Cog):
                     for role in all_roles:
                         if role.id in watched_roles_array:
                             await self.remove_user_rank(user.id, role.id)
+
+            
+            log_service.log(log_service.LogLevel.INFO, "Synced user ranks.")
+
         except Exception as e:
             print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
 
@@ -146,7 +162,7 @@ class Sync(commands.Cog):
             self.sync.start()
             self.sync_loop_started = True
 
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=1)
     async def sync(self):
 
         curr_sys_time = time.time()
