@@ -15,27 +15,27 @@ class Sync(commands.Cog):
         self.sync.cancel()
 
 
-async def fetch_user_ranks(self):
-    try:
-        url = "http://server:5000/dc/sync"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                response.raise_for_status()
-                return await response.json()
-    except Exception as e:
-        print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
-        return {}
+    async def fetch_user_ranks(self):
+        try:
+            url = "http://server:5000/dc/sync"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    response.raise_for_status()
+                    return await response.json()
+        except Exception as e:
+            print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
+            return {}
 
-async def fetch_watched_roles(self):
-    try:
-        url = "http://server:5000/dc/roles"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                response.raise_for_status()
-                return await response.json()
-    except Exception as e:
-        print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
-        return []
+    async def fetch_watched_roles(self):
+        try:
+            url = "http://server:5000/dc/roles"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    response.raise_for_status()
+                    return await response.json()
+        except Exception as e:
+            print(log_service.log(log_service.LogLevel.ERROR, f"Error: {e}"))
+            return []
 
     
     async def add_user_rank(self, discord_id, rank_id):
