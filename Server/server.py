@@ -49,7 +49,7 @@ class DB:
                 steam_id BIGINT NOT NULL,
                 name VARCHAR(32) NOT NULL,
                 job VARCHAR(32) NOT NULL,
-                model VARCHAR(64) NOT NULL,
+                model VARCHAR(128) NOT NULL,
                 wallet INT NOT NULL,
                 faction VARCHAR(32) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
