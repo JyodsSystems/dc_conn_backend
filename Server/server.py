@@ -63,7 +63,7 @@ class DB:
             CREATE TABLE IF NOT EXISTS mapping (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 dc_rank_id BIGINT NULL,
-                gmod_job VARCHAR(32) NOT NULL UNIQUE,
+                gmod_job VARCHAR(32) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """
