@@ -144,7 +144,7 @@ class Sync(commands.Cog):
             self.sync.start()
             self.sync_loop_started = True
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(seconds=15)
     async def sync(self):
         print("Sync loop is running...")
         print(log_service.log(log_service.LogLevel.INFO, "Syncing data..."))
