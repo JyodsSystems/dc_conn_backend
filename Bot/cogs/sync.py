@@ -158,5 +158,5 @@ class Sync(commands.Cog):
             await self.sync_user_ranks(data)
         except Exception as e:
             print(log_service.log(log_service.LogLevel.ERROR, f"Error in sync loop: {e}"))
-        finally:
-            print(log_service.log(log_service.LogLevel.INFO, f"Syncing took {time.time() - curr_sys_time} seconds."))
+
+        print(log_service.log(log_service.LogLevel.INFO, f"Syncing took {time.time() - curr_sys_time} seconds."))
