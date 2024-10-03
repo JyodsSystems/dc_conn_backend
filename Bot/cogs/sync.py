@@ -142,6 +142,8 @@ class Sync(commands.Cog):
 
             for user in all_users:
 
+                member_roles = user.roles
+
                 curr_time = time.time()
 
                 log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id}...")
@@ -149,20 +151,20 @@ class Sync(commands.Cog):
                 if str(user.id) in data:
                     user_data = data[str(user.id)]
 
-                    log_service.log(log_service.LogLevel.INFO, f"UserData: {user_data}")
+                    log_service.log(log_service.LogLevel.INFO, f"UserData: {user_data} for user {user.id} with roles {member_roles}")
 
                     for role in all_roles:
                         if role.id in user_data:
-                            if role.id in watched_roles_array:
+                            if role.id in watched_roles_array and role not in member_roles:
                                 log_service.log(log_service.LogLevel.INFO, f"Wanted to add role {role.id} to user {user.id}")
                                 await self.add_user_rank(user.id, role.id)
                         else:
-                            if role.id in watched_roles_array:
+                            if role.id in watched_roles_array and role in member_roles:
                                 log_service.log(log_service.LogLevel.INFO, f"Wanted to remove role {role.id} from user {user.id}")
                                 await self.remove_user_rank(user.id, role.id)
                 else:
                     for role in all_roles:
-                        if role.id in watched_roles_array:
+                        if role.id in watched_roles_array and role in member_roles:
                             log_service.log(log_service.LogLevel.INFO, f"Wanted to remove role {role.id} from user {user.id}")
                             await self.remove_user_rank(user.id, role.id)
 
