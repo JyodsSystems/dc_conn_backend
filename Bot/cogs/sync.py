@@ -139,10 +139,7 @@ async def fetch_watched_roles(self):
 
     @tasks.loop(seconds=30)
     async def sync(self):
-        if not self.sync.is_running():
-            print(log_service.log(log_service.LogLevel.WARNING, "Sync loop is not running!"))
-        else:
-            print(log_service.log(log_service.LogLevel.INFO, "Syncing data..."))
+        print(log_service.log(log_service.LogLevel.INFO, "Syncing data..."))
         try:
             data = await self.fetch_user_ranks()
             await self.sync_user_ranks(data)
