@@ -146,12 +146,12 @@ class Sync(commands.Cog):
 
                 curr_time = time.time()
 
-                log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id}...")
+                log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id}... with roles {member_roles}")
 
                 if str(user.id) in data:
                     user_data = data[str(user.id)]
 
-                    log_service.log(log_service.LogLevel.INFO, f"UserData: {user_data} for user {user.id} with roles {member_roles}")
+                    log_service.log(log_service.LogLevel.INFO, f"UserData: {user_data} for user {user.id}")
 
                     for role in all_roles:
                         if role.id in user_data:
