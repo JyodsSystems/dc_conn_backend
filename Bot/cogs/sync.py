@@ -2,6 +2,7 @@ import requests
 import discord
 import aiohttp
 import time
+import asyncio
 from discord.ext import tasks, commands
 import services.log_service as log_service
 
@@ -54,6 +55,9 @@ class Sync(commands.Cog):
     
     async def add_user_rank(self, discord_id, rank_id):
         try:
+
+            await asyncio.sleep(0.5)
+
             guild = self.bot.get_guild(1281606978329645057) # Replace with your guild ID
             
             try:
@@ -87,6 +91,8 @@ class Sync(commands.Cog):
     
     async def remove_user_rank(self, discord_id, rank_id):
             try: 
+
+                await asyncio.sleep(0.5)
             
                 guild = self.bot.get_guild(1281606978329645057)
 
@@ -135,6 +141,9 @@ class Sync(commands.Cog):
                 return
 
             for user in all_users:
+
+                log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id}...")
+
                 if str(user.id) in data:
                     user_data = data[str(user.id)]
                     for role in all_roles:
