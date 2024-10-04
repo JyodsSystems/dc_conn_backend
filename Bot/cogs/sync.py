@@ -3,6 +3,7 @@ import discord
 import aiohttp
 import time
 import asyncio
+import singelton.global_var as global_var
 from discord.ext import tasks, commands
 import services.log_service as log_service
 
@@ -169,6 +170,12 @@ class Sync(commands.Cog):
                             await self.remove_user_rank(user.id, role.id)
 
                 print(log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id} took {time.time() - curr_time} seconds."))
+
+                global_var.set_stats("synced_users", len(all_users))
+                global_var.set_stats("synced_roles", len(all_roles))
+                global_var.set_stats("last_sync", time.time())
+                global_var.set_stats("last_duration", time.time() - curr_time)
+                global_var.set_stats("duration_sum", global_var.get_stats("duration_sum") + (time.time() - curr_time))
 
             
             log_service.log(log_service.LogLevel.INFO, "Synced user ranks.")

@@ -6,6 +6,7 @@ from discord import default_permissions
 import requests
 import json
 import cogs.sync as sync
+import singelton.global_var as global_var
 
 from services import log_service
 
@@ -82,6 +83,15 @@ async def map(ctx: discord.ApplicationContext, file: discord.Attachment):
         
         except Exception as e:
             await ctx.respond(f"Error: {e}")
+
+@bot.slash_command(description="Get Stats", default_permissions="administrator")
+async def stats(ctx: discord.ApplicationContext):
+        
+        stats = global_var.get_all_stats()
+        
+        message = global_var.format_stats()
+        
+        await ctx.respond(message)
 
 @bot.event
 async def on_ready():
