@@ -171,13 +171,6 @@ class Sync(commands.Cog):
 
                 print(log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id} took {time.time() - curr_time} seconds."))
 
-                now = time.time()
-
-                formatted_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(now))
-
-                global_var.set_stats("synced_users", len(all_users))
-                global_var.set_stats("synced_roles", len(all_roles))
-
             
             log_service.log(log_service.LogLevel.INFO, "Synced user ranks.")
 
@@ -206,15 +199,6 @@ class Sync(commands.Cog):
 
         print(log_service.log(log_service.LogLevel.INFO, f"Syncing took {time.time() - curr_sys_time} seconds."))
 
-        now = time.time()
-
-        # Format current time for last_sync and last_duration
-        formatted_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(now))
-        last_duration_formatted_miliseconds = (time.time() - curr_sys_time) * 1000
-        last_duration_formatted = f"{last_duration_formatted_miliseconds // 1000}s {last_duration_formatted_miliseconds % 1000}ms"
-
-        # Set global statistics
-        global_var.set_stats("last_sync", formatted_time) 
-        global_var.set_stats("last_duration", last_duration_formatted) 
-        global_var.set_stats(f"duration_{str(now)}", time.time() - now)
-        global_var.set_median()
+        global_var.add_stat("sync_time", time.time() - curr_sys_time)
+        global_var.add_stat("duration_"+ time.strftime("%H_%M"), time.time() - curr_sys_time)
+        global_var.calculate_median_duration()

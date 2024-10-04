@@ -1,43 +1,36 @@
+import numpy as np
+
 stats = {}
 
-def set_stats(key, value):
-    stats[key] = value
+def add_stat(self, name, value):
+    """Fügt eine Statistik hinzu oder aktualisiert den Wert."""
+    stats[name] = value
 
-def get_stats(key):
-    return stats[key] if key in stats else None
+def get_stats(self):
+    """Gibt die Statistiken als formatierten String zurück."""
+    output = []
+    for name, value in self.stats.items():
+        output.append(f"{name}: {value} ms")
+    return "\n".join(output)
 
-def get_all_stats():
-    return stats
+@staticmethod
+def convert_to_milliseconds(time_value, unit):
+    """Konvertiert verschiedene Zeitwerte in Millisekunden."""
+    conversions = {
+        'seconds': time_value * 1000,
+        'minutes': time_value * 1000 * 60,
+        'hours': time_value * 1000 * 60 * 60,
+        'duration_median': time_value,  # wird angenommen, dass dieser bereits in ms vorliegt
+    }
 
-def format_stats():
-    # create a message with all stats
-    message = ""
-    for key in stats:
-        message += f"{key}: {stats[key]}\n"
+    if unit not in conversions:
+        raise ValueError(f"Ungültige Zeiteinheit: {unit}. Erlaubte Einheiten: {', '.join(conversions.keys())}")
 
-    return message
+    return conversions[unit]
 
-def set_median():
-    # Calculate the median of all duration statistics
-    durations = []
-
-    # Collect all duration values
-    for key in stats:
-        if "duration_" in key:
-            durations.append(stats[key])
-
-    # Sort the durations to calculate the median
-    durations.sort()
-
-    # Calculate median
-    if len(durations) % 2 != 0:
-        median = durations[len(durations) // 2]  # Odd number of elements
-    else:
-        mid_index = len(durations) // 2
-        median = (durations[mid_index] + durations[mid_index - 1]) / 2  # Even number of elements
-
-    # Function to format the duration in seconds and milliseconds
-    format_with_milliseconds = lambda x: f"{x // 1000}s {x % 1000}ms"
-    
-    # Set the formatted median duration in stats
-    set_stats("median_duration", format_with_milliseconds(median))
+def calculate_median_duration():
+        """Berechnet den Median der Statistiken, die mit 'duration_' beginnen."""
+        duration_values = [value for name, value in stats.items() if name.startswith('duration_')]
+        if duration_values:
+            median_value = np.median(duration_values)
+            add_stat('duration_median', median_value)
