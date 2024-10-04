@@ -208,9 +208,12 @@ class Sync(commands.Cog):
 
         now = time.time()
 
+        # Format current time for last_sync and last_duration
         formatted_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(now))
+        last_duration_formatted = time.strftime('%H:%M:%S', time.gmtime(time.time() - now))
 
-        global_var.set_stats("last_sync", formatted_time)
-        global_var.set_stats("last_duration", time.strftime('%H:%M:%S', time.gmtime(time.time() - now)))
-        global_var.set_stats("duration_" + str(time.time()), time.time() - now)
+        # Set global statistics
+        global_var.set_stats("last_sync", formatted_time) 
+        global_var.set_stats("last_duration", last_duration_formatted) 
+        global_var.set_stats(f"duration_{str(now)}", time.time() - now)
         global_var.set_median()
