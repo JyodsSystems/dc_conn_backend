@@ -86,10 +86,8 @@ async def map(ctx: discord.ApplicationContext, file: discord.Attachment):
 
 @bot.slash_command(description="Get Stats", default_permissions="administrator")
 async def stats(ctx: discord.ApplicationContext):
-        
-        stats = global_var.get_all_stats()
-        
-        message = global_var.format_stats()
+                
+        message = global_var.get_stats()
         
         await ctx.respond(message)
 
