@@ -210,7 +210,8 @@ class Sync(commands.Cog):
 
         # Format current time for last_sync and last_duration
         formatted_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(now))
-        last_duration_formatted = time.strftime('%H:%M:%S:%f', time.gmtime(time.time() - curr_sys_time))
+        last_duration_formatted_miliseconds = (time.time() - curr_sys_time) * 1000
+        last_duration_formatted = f"{last_duration_formatted_miliseconds // 1000}s {last_duration_formatted_miliseconds % 1000}ms"
 
         # Set global statistics
         global_var.set_stats("last_sync", formatted_time) 
