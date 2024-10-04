@@ -2,14 +2,14 @@ import numpy as np
 
 stats = {}
 
-def add_stat(self, name, value):
+def add_stat(name, value):
     """Fügt eine Statistik hinzu oder aktualisiert den Wert."""
     stats[name] = value
 
-def get_stats(self):
+def get_stats():
     """Gibt die Statistiken als formatierten String zurück."""
     output = []
-    for name, value in self.stats.items():
+    for name, value in stats.items():
         output.append(f"{name}: {value} ms")
     return "\n".join(output)
 
