@@ -171,11 +171,15 @@ class Sync(commands.Cog):
 
                 print(log_service.log(log_service.LogLevel.INFO, f"Syncing user {user.id} took {time.time() - curr_time} seconds."))
 
+                now = time.time()
+
+                formatted_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(now))
+
                 global_var.set_stats("synced_users", len(all_users))
                 global_var.set_stats("synced_roles", len(all_roles))
-                global_var.set_stats("last_sync", time.time())
-                global_var.set_stats("last_duration", time.time() - curr_time)
-                global_var.set_stats("duration_sum", global_var.get_stats("duration_sum") + (time.time() - curr_time))
+                global_var.set_stats("last_sync", formatted_time)
+                global_var.set_stats("last_duration", time.strftime('%H:%M:%S', time.gmtime(time.time() - now)))
+                global_var.set_stats("duration_" + str(time.time()), time.time() - now)
 
             
             log_service.log(log_service.LogLevel.INFO, "Synced user ranks.")
