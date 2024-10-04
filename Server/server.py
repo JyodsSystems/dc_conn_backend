@@ -9,11 +9,15 @@ app = Flask(__name__)
 
 class DB:
     def __init__(self):
+        self.conn = None
+        self.cursor = None
+
+    def __enter__(self):
         try:
             self.conn = mysql.connector.connect(
                 host="mysql_db",  # Name des Datenbank-Containers im Docker-Compose
-                user="bot",      # Benutzername aus Docker-Compose
-                password="bot",  # Passwort aus Docker-Compose
+                user="bot",       # Benutzername aus Docker-Compose
+                password="bot",   # Passwort aus Docker-Compose
                 database="registerdb"  # Datenbankname aus Docker-Compose
             )
             if self.conn.is_connected():
@@ -22,10 +26,22 @@ class DB:
                 self.init_main_table()
                 self.init_secondary_table()
                 self.init_mapping_table()
-        except Error as e:
+        except mysql.connector.Error as e:
             print(f"Fehler beim Verbinden zur Datenbank: {e}")
             self.conn = None
             self.cursor = None
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()  # Verbindung schließen
+
+    def close(self):
+        """Schließt die Datenbankverbindung, falls sie geöffnet ist."""
+        if self.cursor:
+            self.cursor.close()  # Cursor schließen
+        if self.conn:
+            self.conn.close()  # Verbindung schließen
+            print("Verbindung zur Datenbank geschlossen.")
 
     def init_main_table(self):
         """Erstellt die Tabelle 'users' in der Datenbank, falls sie noch nicht existiert."""
@@ -85,7 +101,6 @@ class DB:
             if self.cursor:
                 self.cursor.execute(query, params)
                 result = self.cursor.fetchall()
-                self.conn.commit()
                 return result
         except Error as e:
             print(f"Fehler beim Abrufen der Daten: {e}")
@@ -97,7 +112,6 @@ class DB:
             if self.cursor:
                 self.cursor.execute(query, params)
                 result = self.cursor.fetchone()
-                self.conn.commit()
                 return result
         except Error as e:
             print(f"Fehler beim Abrufen der Daten: {e}")
@@ -109,8 +123,6 @@ class DB:
             self.cursor.close()
             self.conn.close()
             print("Datenbankverbindung geschlossen.")
-
-db = DB()
 
 def check_steam_id(steam_id : int) -> bool:
     """
@@ -124,8 +136,10 @@ def check_steam_id(steam_id : int) -> bool:
     """
 
     query = "SELECT * FROM users WHERE steam_id = %s;"
-    result = db.fetch_one(query, (steam_id,))
-    return result is not None
+
+    with DB() as db:
+        result = db.fetch_one(query, (steam_id,))
+        return result is not None
 
 def check_discord_id_gmod(steam_id : int) -> bool:
     """
@@ -139,8 +153,10 @@ def check_discord_id_gmod(steam_id : int) -> bool:
     """
 
     query = "SELECT discord_id FROM users WHERE steam_id = %s;"
-    result = db.fetch_one(query, (steam_id,))
-    return result["discord_id"] is not None if result else False
+
+    with DB() as db:
+        result = db.fetch_one(query, (steam_id,))
+        return result["discord_id"] is not None if result else False
 
 def get_reg_key(steam_id : int) -> str:
     """
@@ -154,8 +170,10 @@ def get_reg_key(steam_id : int) -> str:
     """
 
     query = "SELECT reg_key FROM users WHERE steam_id = %s;"
-    result = db.fetch_one(query, (steam_id,))
-    return result["reg_key"] if result else None
+
+    with DB() as db:
+        result = db.fetch_one(query, (steam_id,))
+        return result["reg_key"] if result else None
 
 def register_steam_id(steam_id : int) -> None:
     """
@@ -166,7 +184,8 @@ def register_steam_id(steam_id : int) -> None:
     """
 
     query = "INSERT INTO users (steam_id, reg_key) VALUES (%s, %s);"
-    db.execute_query(query, (steam_id, os.urandom(16).hex()))
+    with DB() as db:
+        db.execute_query(query, (steam_id, os.urandom(16).hex()))
 
 def link_discord_id(reg_key : str, discord_id : int) -> None:
     """
@@ -184,7 +203,8 @@ def link_discord_id(reg_key : str, discord_id : int) -> None:
         raise Exception("Ungültiger Registrierungsschlüssel.")
 
     query = "UPDATE users SET discord_id = %s WHERE reg_key = %s;"
-    db.execute_query(query, (discord_id, reg_key))
+    with DB() as db:
+        db.execute_query(query, (discord_id, reg_key))
     
 def check_reg_key(reg_key : str) -> bool:
     """
@@ -198,8 +218,10 @@ def check_reg_key(reg_key : str) -> bool:
     """
 
     query = "SELECT * FROM users WHERE reg_key = %s;"
-    result = db.fetch_one(query, (reg_key,))
-    return result is not None
+
+    with DB() as db:
+        result = db.fetch_one(query, (reg_key,))
+        return result is not None
 
 def already_used_reg_key(reg_key : str) -> bool:
     """
@@ -213,8 +235,10 @@ def already_used_reg_key(reg_key : str) -> bool:
     """
 
     query = "SELECT discord_id FROM users WHERE reg_key = %s;"
-    result = db.fetch_one(query, (reg_key,))
-    return result["discord_id"] is not None if result else False
+
+    with DB() as db:
+        result = db.fetch_one(query, (reg_key,))
+        return result["discord_id"] is not None if result else False
 
 def check_discord_id(discord_id : int) -> bool:
     """
@@ -228,8 +252,10 @@ def check_discord_id(discord_id : int) -> bool:
     """
 
     query = "SELECT * FROM users WHERE discord_id = %s;"
-    result = db.fetch_one(query, (discord_id,))
-    return result is not None
+
+    with DB() as db:
+        result = db.fetch_one(query, (discord_id,))
+        return result is not None
 
 def add_or_change_entry(id, sid, name, job, model, wallet, faction) -> None:
     """
@@ -247,15 +273,32 @@ def add_or_change_entry(id, sid, name, job, model, wallet, faction) -> None:
     Returns:
         None
     """
-    query = "SELECT * FROM players WHERE g_id = %s;"
-    result = db.fetch_one(query, (id,))
+    
+    query_select = "SELECT * FROM players WHERE g_id = %s;"
+    query_update = """
+        UPDATE players SET steam_id = %s, name = %s, job = %s, model = %s, wallet = %s, faction = %s 
+        WHERE g_id = %s;
+    """
+    query_insert = """
+        INSERT INTO players (g_id, steam_id, name, job, model, wallet, faction) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+    """
 
-    if result:
-        query = "UPDATE players SET steam_id = %s, name = %s, job = %s, model = %s, wallet = %s, faction = %s WHERE g_id = %s;"
-        db.execute_query(query, (sid, name, job, model, wallet, faction, id))
-    else:
-        query = "INSERT INTO players (g_id, steam_id, name, job, model, wallet, faction) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-        db.execute_query(query, (id, sid, name, job, model, wallet, faction))    
+    try:
+        with DB() as db:
+            result = db.fetch_one(query_select, (id,))
+            if result:
+                # Spieler existiert, also führen wir ein Update durch
+                db.execute_query(query_update, (sid, name, job, model, wallet, faction, id))
+                print(f"Spieler mit ID {id} aktualisiert.")
+            else:
+                # Spieler existiert noch nicht, also führen wir ein Insert durch
+                db.execute_query(query_insert, (id, sid, name, job, model, wallet, faction))
+                print(f"Neuer Spieler mit ID {id} hinzugefügt.")
+    
+    except Exception as e:
+        print(f"Fehler beim Hinzufügen oder Aktualisieren des Spielers: {e}")
+ 
 
 def get_discord_users_with_all_ranks():
     # SQL-Abfrage mit COALESCE zur Handhabung von NULL-Werten
@@ -265,7 +308,9 @@ def get_discord_users_with_all_ranks():
         JOIN players ON users.steam_id = players.steam_id
         JOIN mapping ON players.job = mapping.gmod_job;
     """
-    result = db.fetch_all(query)
+
+    with DB() as db:
+        result = db.fetch_all(query)
 
     data = {}  # Hier werden die Daten gespeichert
 
@@ -284,7 +329,8 @@ def get_discord_users_with_all_ranks():
 
 def delete_every_entry_except_ids(ids):
     query = "DELETE FROM players WHERE g_id NOT IN (%s);" % ",".join(ids)
-    db.execute_query(query)
+    with DB() as db:
+        db.execute_query(query)
 
 
 @app.route("/")
@@ -387,7 +433,11 @@ def dc_roles():
     # Get all Mappings but no double dc_rank_id entries
 
     query = "SELECT DISTINCT dc_rank_id FROM mapping;"
-    result = db.fetch_all(query)
+    with DB() as db:
+        result = db.fetch_all(query)
+
+    if not result:
+        return jsonify({"message": "Keine Rollen gefunden."}), 404
 
     data = []
     for row in result:
@@ -422,8 +472,9 @@ def map():
         
     #clear table
     query = "DELETE FROM mapping;"
-    db.execute_query(query)
-    db.conn.commit()
+    with DB as db:
+        db.execute_query(query)
+        db.conn.commit()
 
     for entry in data:
         gmod_job = entry["gmod_job"]
