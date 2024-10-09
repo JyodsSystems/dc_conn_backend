@@ -472,7 +472,7 @@ def map():
         
     #clear table
     query = "DELETE FROM mapping;"
-    with DB as db:
+    with DB() as db:
         db.execute_query(query)
         db.conn.commit()
 
