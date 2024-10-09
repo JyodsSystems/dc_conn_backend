@@ -481,7 +481,8 @@ def map():
         rank_id = entry["rank_id"]
 
         query = "INSERT INTO mapping (dc_rank_id, gmod_job) VALUES (%s, %s);"
-        db.execute_query(query, (rank_id, gmod_job))
+        with DB() as db:
+            db.execute_query(query, (rank_id, gmod_job))
 
     return jsonify({"message": "Mapping erfolgreich hinzugefügt."}), 201
 
