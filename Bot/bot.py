@@ -34,12 +34,12 @@ async def link(ctx: discord.ApplicationContext, reg_key: str):
 
             data = response.json()
             
-            await ctx.respond(data["message"])           
+            await ctx.respond(data["message"],ephemeral=True)           
         
         except Exception as e:
             await ctx.respond(f"Error: {e}")
 
-@bot.slash_command(description="Registriere deinen GMod Account.")
+@bot.slash_command(description="Registriere deinen GMod Account.", default_permissions="administrator")
 async def register(ctx: discord.ApplicationContext, steam_id: int):
         
         data = None
@@ -94,7 +94,7 @@ async def stats(ctx: discord.ApplicationContext):
 @bot.event
 async def on_ready():
 
-    game = discord.Game("das Spiel des Lebens")
+    game = discord.Game("Rebellen-Zerstörungs Simulator")
     await bot.change_presence(activity=game)
 
     log_service.log(log_service.LogLevel.INFO, f"We have logged in as {bot.user}")
