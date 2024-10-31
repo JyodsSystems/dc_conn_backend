@@ -9,6 +9,7 @@ services:
     working_dir: /app
     environment:
       - PYTHONUNBUFFERED=1
+      - DISCORD_TOKEN=YOUR_TOKEN
     depends_on:
       - db
       - server
@@ -24,6 +25,10 @@ services:
     working_dir: /app
     environment:
       - PYTHONUNBUFFERED=1
+      - MYSQL_HOST=db
+      - MYSQL_USER=bot
+      - MYSQL_PASSWORD=bot
+      - MYSQL_DATABASE=registerdb
     depends_on:
       - db
 

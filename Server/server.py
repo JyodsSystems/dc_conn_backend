@@ -15,10 +15,10 @@ class DB:
     def __enter__(self):
         try:
             self.conn = mysql.connector.connect(
-                host="mysql_db",  # Name des Datenbank-Containers im Docker-Compose
-                user="bot",       # Benutzername aus Docker-Compose
-                password="bot",   # Passwort aus Docker-Compose
-                database="registerdb"  # Datenbankname aus Docker-Compose
+                host=os.getenv("MYSQL_HOST"),       # Hostname aus Docker-Compose
+                user=os.getenv("MYSQL_USER"),       # Benutzername aus Docker-Compose
+                password=os.getenv("MYSQL_PASSWORD"),   # Passwort aus Docker-Compose
+                database=os.getenv("MYSQL_DATABASE")  # Datenbankname aus Docker-Compose
             )
             if self.conn.is_connected():
                 self.cursor = self.conn.cursor(dictionary=True)

@@ -1,5 +1,4 @@
-# This example requires the 'members' privileged intent to use the Member converter.
-
+import os
 import discord
 from discord.ext import tasks, commands
 from discord import default_permissions
@@ -14,15 +13,6 @@ intents = discord.Intents.all()
 intents.members = True
 
 bot = discord.Bot(intents=intents)
-# The debug guilds parameter can be used to restrict slash command registration to only the supplied guild IDs.
-# This is done like so: discord.Bot(debug_guilds=[...])
-# Without this, all commands are made global unless they have a guild_ids parameter in the command decorator.
-
-# Note: If you want you can use commands.Bot instead of discord.Bot.
-# Use discord.Bot if you don't want prefixed message commands.
-
-# With discord.Bot you can use @bot.command as an alias
-# of @bot.slash_command but this is overridden by commands.Bot.
 
 @bot.slash_command(description="Linke deinen GMod Account.")
 async def link(ctx: discord.ApplicationContext, reg_key: str):
@@ -47,7 +37,7 @@ async def register(ctx: discord.ApplicationContext, steam_id: int):
         try:
         
             response = requests.post(f"http://server:5000/register/{steam_id}")
-            # response.raise_for_status()
+            response.raise_for_status()
 
             data = response.json()
             
@@ -123,5 +113,4 @@ async def on_slash_command_error(ctx, error):
 
 bot.add_cog(sync.Sync(bot))
 
-
-bot.run("MTI4NDUxNzYwMTY1NzA5NDIwNw.GrgbT7.2M-6mLOLpdsl0I7cDoMHvOmWkrs3oInv4q7Me0")
+bot.run(os.getenv("DISCORD_TOKEN"))
